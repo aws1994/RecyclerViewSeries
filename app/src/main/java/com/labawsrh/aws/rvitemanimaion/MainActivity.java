@@ -7,9 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fabSwitcher;
     boolean isDark = false;
     ConstraintLayout rootLayout;
-
-
+    EditText searchInput ;
+    CharSequence search="";
 
 
 
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         fabSwitcher = findViewById(R.id.fab_switcher);
         rootLayout = findViewById(R.id.root_layout);
-
+        searchInput = findViewById(R.id.search_input);
         NewsRecyclerview = findViewById(R.id.news_rv);
         mData = new ArrayList<>();
 
@@ -58,12 +61,14 @@ public class MainActivity extends AppCompatActivity {
         if(isDark) {
             // dark theme is on
 
+            searchInput.setBackgroundResource(R.drawable.search_input_dark_style);
             rootLayout.setBackgroundColor(getResources().getColor(R.color.black));
 
         }
         else
         {
             // light theme is on
+            searchInput.setBackgroundResource(R.drawable.search_input_style);
             rootLayout.setBackgroundColor(getResources().getColor(R.color.white));
 
         }
@@ -107,13 +112,20 @@ public class MainActivity extends AppCompatActivity {
                 if (isDark) {
 
                     rootLayout.setBackgroundColor(getResources().getColor(R.color.black));
+                    searchInput.setBackgroundResource(R.drawable.search_input_dark_style);
 
                 }
                 else {
                     rootLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                    searchInput.setBackgroundResource(R.drawable.search_input_style);
                 }
 
                 newsAdapter = new NewsAdapter(getApplicationContext(),mData,isDark);
+                if (!search.toString().isEmpty()){
+
+                    newsAdapter.getFilter().filter(search);
+
+                }
                 NewsRecyclerview.setAdapter(newsAdapter);
                 saveThemeStatePref(isDark);
 
@@ -123,7 +135,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        
+
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+                newsAdapter.getFilter().filter(s);
+                search = s;
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
 
     }
 
